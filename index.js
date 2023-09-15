@@ -546,7 +546,7 @@ app.get("/cars", (req, res) => {
 
 app.get("/cars/:id", (req, res) => {
   const carId = req.params.id;
-  const car = cars.find((car) => car.id === carId);
+  const car = cars.find((car) => car.id == carId);
 
   let timeout;
 

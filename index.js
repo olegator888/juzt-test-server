@@ -536,7 +536,7 @@ app.get("/cars", (req, res) => {
 
   timeout = setTimeout(() => {
     res.json({
-      cars: filteredCars.slice(0, CARS_PER_PAGE * page),
+      cars: JSON.stringify(filteredCars.slice(0, CARS_PER_PAGE * page)),
       colors,
       brands,
       hasMore: filteredCars.length > page * CARS_PER_PAGE,

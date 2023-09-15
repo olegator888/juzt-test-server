@@ -1,0 +1,160 @@
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
+import fs from "fs";
+
+const CARS_PER_PAGE = 10;
+
+const dataPath = "./db.json";
+const PORT = 8000;
+
+const { cars } = JSON.parse(fs.readFileSync(dataPath));
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.raw());
+
+app.get("/cars", (req, res) => {
+  let timeout;
+
+  if (timeout) {
+    clearInterval(timeout);
+  }
+
+  const colors = [];
+  const includedColors = [];
+
+  cars.forEach((car) => {
+    if (includedColors.includes(car.color)) {
+      return;
+    }
+
+    colors.push({
+      color: car.color,
+      colorUrl: car.colorUrl,
+    });
+
+    includedColors.push(car.color);
+  });
+
+  const brands = Array.from(new Set(cars.map((car) => car.brand)));
+
+  const page = req.query.page;
+  const brandsQuery = req.query.brand;
+  const colorsQuery = req.query.color;
+
+  let filteredCars = [...cars];
+
+  if (brandsQuery) {
+    if (Array.isArray(brandsQuery)) {
+      filteredCars = filteredCars.filter((car) =>
+        brandsQuery.includes(car.brand)
+      );
+    } else {
+      filteredCars = filteredCars.filter((car) => brandsQuery === car.brand);
+    }
+  }
+
+  if (colorsQuery) {
+    if (Array.isArray(colorsQuery)) {
+      filteredCars = filteredCars.filter((car) =>
+        colorsQuery.includes(car.colorUrl)
+      );
+    } else {
+      filteredCars = filteredCars.filter((car) => colorsQuery === car.colorUrl);
+    }
+  }
+
+  const sortBy = req.query.sortBy;
+  const sortMethod = req.query.sortMethod;
+
+  if (sortBy) {
+    if (sortMethod) {
+      if (sortBy === "price") {
+        switch (sortMethod) {
+          case "asc":
+            filteredCars = [...filteredCars].sort(
+              (a, b) => +a.price - +b.price
+            );
+            break;
+          case "desc":
+            filteredCars = [...filteredCars].sort(
+              (a, b) => +b.price - +a.price
+            );
+            break;
+        }
+      }
+
+      if (sortBy === "year") {
+        switch (sortMethod) {
+          case "asc":
+            filteredCars = [...filteredCars].sort((a, b) => +a.year - +b.year);
+            break;
+          case "desc":
+            filteredCars = [...filteredCars].sort((a, b) => +b.year - +a.year);
+            break;
+        }
+      }
+    }
+  }
+
+  timeout = setTimeout(() => {
+    res.json({
+      cars: filteredCars.slice(0, CARS_PER_PAGE * page),
+      colors,
+      brands,
+      hasMore: filteredCars.length > page * CARS_PER_PAGE,
+    });
+  }, 1000);
+});
+
+app.get("/cars/:id", (req, res) => {
+  const carId = req.params.id;
+  const car = cars.find((car) => car.id === carId);
+
+  let timeout;
+
+  if (timeout) {
+    clearInterval(timeout);
+  }
+
+  timeout = setTimeout(() => {
+    res.json(car);
+  }, 1000);
+});
+
+app.post("/cars", (req, res) => {
+  const newCar = {
+    ...req.body,
+    id: String(cars.length + 1),
+  };
+
+  const newCars = [...cars, newCar];
+
+  let timeout;
+
+  if (timeout) {
+    clearInterval(timeout);
+  }
+
+  timeout = setTimeout(() => {
+    fs.writeFileSync(
+      dataPath,
+      JSON.stringify(
+        {
+          cars: newCars,
+        },
+        null,
+        2
+      )
+    );
+
+    res.json(newCars);
+  }, 1000);
+});
+
+app.listen(PORT, () => {
+  console.log(`Server started at port ${PORT}`);
+});

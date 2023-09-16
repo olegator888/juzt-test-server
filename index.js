@@ -541,7 +541,7 @@ app.get("/cars", (req, res) => {
       brands,
       hasMore: filteredCars.length > page * CARS_PER_PAGE,
     });
-  }, 500);
+  }, 300);
 });
 
 app.get("/cars/:id", (req, res) => {
@@ -556,7 +556,7 @@ app.get("/cars/:id", (req, res) => {
 
   timeout = setTimeout(() => {
     res.json(car);
-  }, 500);
+  }, 300);
 });
 
 app.post("/cars", (req, res) => {
@@ -586,7 +586,7 @@ app.post("/cars", (req, res) => {
     // );
 
     res.json(cars);
-  }, 500);
+  }, 300);
 });
 
 app.listen(PORT, () => {

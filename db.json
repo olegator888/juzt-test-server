@@ -391,13 +391,13 @@
       "powerReserve": 20000
     },
     {
-      "imageUrl": "https://cdni.autocarindia.com/Utils/ImageResizer.ashx?n=https://cdni.autocarindia.com/ExtraImages/20220804053944_Huracan%205.jpg",
-      "brand": "lamba",
-      "model": "xs8",
-      "color": "Зеленый",
-      "colorUrl": "green",
-      "price": "31",
-      "year": "2020",
+      "imageUrl": "https://media.istockphoto.com/id/458250423/photo/red-range-rover-evoque-2012-front-view.jpg?s=612x612&w=0&k=20&c=zV80luuv0xh_RAdHYogsFpvZcSlyDvkKbX-XCHgpVhM=",
+      "brand": "Range Rover",
+      "model": "Cool",
+      "color": "Красный",
+      "colorUrl": "red",
+      "price": "100",
+      "year": "2022",
       "engineType": "gasoline",
       "transmission": "auto",
       "id": "31"

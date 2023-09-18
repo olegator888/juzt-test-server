@@ -12,6 +12,11 @@ app.use(bodyParser.raw());
 app.use(express.static("public"));
 //allow OPTIONS on all resources
 app.options("*", cors());
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
+  next();
+});
 
 const CARS_PER_PAGE = 10;
 

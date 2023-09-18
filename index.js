@@ -2,10 +2,11 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import fs from "fs";
+import path from "path";
 
 const CARS_PER_PAGE = 10;
 
-const dataPath = "./public/db.json";
+const dataPath = path.resolve("./public/db.json");
 const PORT = 8000;
 
 const { cars } = JSON.parse(fs.readFileSync(dataPath));

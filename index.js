@@ -10,8 +10,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
 app.use(express.static("public"));
-//allow OPTIONS on all resources
-app.options("*", cors());
 app.use((req, res, next) => {
   res.header(
     "Access-Control-Allow-Origin",

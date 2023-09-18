@@ -134,7 +134,7 @@ app.get("/cars", (req, res) => {
       colors,
       brands,
       hasMore: filteredCars.length > page * CARS_PER_PAGE,
-      test: "test",
+      test: "test2",
     });
   }, 300);
 });

@@ -5,7 +5,7 @@ import fs from "fs";
 
 const CARS_PER_PAGE = 10;
 
-const dataPath = "./db.json";
+const dataPath = "./public/db.json";
 const PORT = 8000;
 
 const { cars } = JSON.parse(fs.readFileSync(dataPath));
@@ -15,6 +15,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
+app.use(express.static("public"));
 
 app.get("/cars", (req, res) => {
   let timeout;

@@ -4,19 +4,21 @@ import cors from "cors";
 import fs from "fs";
 import path from "path";
 
-const CARS_PER_PAGE = 10;
-
-const dataPath = path.resolve("./public/db.json");
-const PORT = 8000;
-
-const { cars } = JSON.parse(fs.readFileSync(dataPath));
-
 const app = express();
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
 app.use(express.static("public"));
+//allow OPTIONS on all resources
+app.options("*", cors());
+
+const CARS_PER_PAGE = 10;
+
+const dataPath = path.resolve("./public/db.json");
+const PORT = 8000;
+
+const { cars } = JSON.parse(fs.readFileSync(dataPath));
 
 app.get("/cars", (req, res) => {
   let timeout;

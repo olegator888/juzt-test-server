@@ -5,7 +5,7 @@ import fs from "fs";
 import path from "path";
 
 const app = express();
-// app.use(cors());
+app.use(cors());
 
 // Add headers before the routes are defined
 // app.use(function (req, res, next) {

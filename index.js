@@ -5,11 +5,8 @@ import fs from "fs";
 import path from "path";
 
 const app = express();
-app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(bodyParser.raw());
-app.use(express.static("public"));
+// app.use(cors());
+
 // Add headers before the routes are defined
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
@@ -34,6 +31,11 @@ app.use(function (req, res, next) {
   // Pass to next layer of middleware
   next();
 });
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.raw());
+app.use(express.static("public"));
 
 const CARS_PER_PAGE = 10;
 
@@ -132,6 +134,7 @@ app.get("/cars", (req, res) => {
       colors,
       brands,
       hasMore: filteredCars.length > page * CARS_PER_PAGE,
+      test: "test",
     });
   }, 300);
 });

@@ -3,6 +3,32 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import fs from "fs";
 import path from "path";
+import mongoose from "mongoose";
+import CarModel from "./car-model.js";
+
+const decode = function (s) {
+  for (
+    var a,
+      b,
+      i = -1,
+      l = (s = s.split("")).length,
+      o = String.fromCharCode,
+      c = "charCodeAt";
+    ++i < l;
+    (a = s[i][c](0)) & 0x80 &&
+    ((s[i] =
+      (a & 0xfc) == 0xc0 && ((b = s[i + 1][c](0)) & 0xc0) == 0x80
+        ? o(((a & 0x03) << 6) + (b & 0x3f))
+        : o(128)),
+    (s[++i] = ""))
+  );
+  return s.join("");
+};
+
+mongoose
+  .connect("mongodb+srv://user:user@cluster0.l9dyuvl.mongodb.net/test")
+  .then(() => console.log("DB OK"))
+  .catch((error) => console.log("DB ERROR", error));
 
 const app = express();
 app.use(cors());
@@ -19,12 +45,19 @@ const PORT = 8000;
 
 const { cars } = JSON.parse(fs.readFileSync(dataPath));
 
-app.get("/cars", (req, res) => {
+app.get("/cars", async (req, res) => {
   let timeout;
 
   if (timeout) {
     clearInterval(timeout);
   }
+
+  const data = await CarModel.find();
+
+  const cars = JSON.parse(JSON.stringify(data, "utf-8")).map((car) => ({
+    ...car,
+    color: decodeURIComponent(car.color),
+  }));
 
   const colors = [];
   const includedColors = [];
@@ -105,7 +138,9 @@ app.get("/cars", (req, res) => {
 
   timeout = setTimeout(() => {
     res.json({
-      cars: filteredCars.slice(0, CARS_PER_PAGE * page),
+      cars: filteredCars
+        .slice(0, CARS_PER_PAGE * page)
+        .map((car) => ({ ...car, color: decode(car.color) })),
       colors,
       brands,
       hasMore: filteredCars.length > page * CARS_PER_PAGE,
@@ -114,47 +149,27 @@ app.get("/cars", (req, res) => {
   }, 300);
 });
 
-app.get("/cars/:id", (req, res) => {
-  const carId = req.params.id;
-  const car = cars.find((car) => car.id == carId);
+app.get("/cars/:id", async (req, res) => {
+  // const carId = req.params.id;
+  // const car = cars.find((car) => car.id == carId);
 
-  let timeout;
+  // let timeout;
 
-  if (timeout) {
-    clearInterval(timeout);
-  }
+  // if (timeout) {
+  //   clearInterval(timeout);
+  // }
 
-  timeout = setTimeout(() => {
-    res.json(car);
-  }, 300);
+  // timeout = setTimeout(() => {
+  //   res.json(car);
+  // }, 300);
+  const car = await CarModel.findById(req.params.id);
+  res.json(car);
 });
 
-app.post("/cars", (req, res) => {
-  const newCar = {
-    ...req.body,
-    id: String(cars.length + 1),
-  };
-
-  let timeout;
-
-  if (timeout) {
-    clearInterval(timeout);
-  }
-
-  timeout = setTimeout(() => {
-    fs.writeFileSync(
-      dataPath,
-      JSON.stringify(
-        {
-          cars: [...cars, newCar],
-        },
-        null,
-        2
-      )
-    );
-
-    res.json(newCar);
-  }, 300);
+app.post("/cars", async (req, res) => {
+  const doc = new CarModel(req.body);
+  const car = await doc.save();
+  res.json(car);
 });
 
 app.listen(PORT, () => {
